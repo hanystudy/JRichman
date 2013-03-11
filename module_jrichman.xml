@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_jrichman" default="compile.module.jrichman">
+  <dirname property="module.jrichman.basedir" file="${ant.file.module_jrichman}"/>
+  
+  <property name="module.jdk.home.jrichman" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.jrichman" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.jrichman" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.jrichman" value="${compiler.args}"/>
+  
+  <property name="jrichman.output.dir" value="${module.jrichman.basedir}/out/production/JRichman"/>
+  <property name="jrichman.testoutput.dir" value="${module.jrichman.basedir}/out/test/JRichman"/>
+  
+  <path id="jrichman.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="jrichman.module.production.classpath">
+    <path refid="${module.jdk.classpath.jrichman}"/>
+    <pathelement location="${idea.home}/plugins/testng/lib/testng.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.10.jar"/>
+  </path>
+  
+  <path id="jrichman.runtime.production.module.classpath">
+    <pathelement location="${jrichman.output.dir}"/>
+    <pathelement location="${idea.home}/plugins/testng/lib/testng.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.10.jar"/>
+  </path>
+  
+  <path id="jrichman.module.classpath">
+    <path refid="${module.jdk.classpath.jrichman}"/>
+    <pathelement location="${jrichman.output.dir}"/>
+    <pathelement location="${idea.home}/plugins/testng/lib/testng.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.10.jar"/>
+  </path>
+  
+  <path id="jrichman.runtime.module.classpath">
+    <pathelement location="${jrichman.testoutput.dir}"/>
+    <pathelement location="${jrichman.output.dir}"/>
+    <pathelement location="${idea.home}/plugins/testng/lib/testng.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.10.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.jrichman">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.jrichman">
+    <patternset refid="excluded.from.module.jrichman"/>
+  </patternset>
+  
+  <path id="jrichman.module.sourcepath">
+    <dirset dir="${module.jrichman.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.jrichman" depends="compile.module.jrichman.production,compile.module.jrichman.tests" description="Compile module JRichman"/>
+  
+  <target name="compile.module.jrichman.production" depends="register.custom.compilers" description="Compile module JRichman; production classes">
+    <mkdir dir="${jrichman.output.dir}"/>
+    <javac2 destdir="${jrichman.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.jrichman}/javac">
+      <compilerarg line="${compiler.args.jrichman}"/>
+      <bootclasspath refid="jrichman.module.bootclasspath"/>
+      <classpath refid="jrichman.module.production.classpath"/>
+      <src refid="jrichman.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.jrichman"/>
+    </javac2>
+    
+    <copy todir="${jrichman.output.dir}">
+      <fileset dir="${module.jrichman.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.jrichman.tests" depends="register.custom.compilers,compile.module.jrichman.production" description="compile module JRichman; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.jrichman" description="cleanup module">
+    <delete dir="${jrichman.output.dir}"/>
+    <delete dir="${jrichman.testoutput.dir}"/>
+  </target>
+</project>
